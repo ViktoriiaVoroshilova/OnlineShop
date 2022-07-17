@@ -28,14 +28,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-var score = app.Services.CreateScope();
-var context = score.ServiceProvider.GetService<ApiContext>();
-InitTestData(context);
+InitTestData(app);
 
 app.Run();
 
-void InitTestData(ApiContext? context)
+void InitTestData(WebApplication app)
 {
+    var score = app.Services.CreateScope();
+    var context = score.ServiceProvider.GetService<ApiContext>();
+    var itemRepository = score.ServiceProvider.GetService<IApplicationRepository<Item>>();
+    var categoryRepository = score.ServiceProvider.GetService<IApplicationRepository<Category>>();
+
     if (context == null)
     {
         return;
@@ -60,8 +63,8 @@ void InitTestData(ApiContext? context)
         new() { Id = 8, Name = "Officine Creative", Price = 49000, CategoryId = 2 },
         new() { Id = 9, Name = "Prada", Price = 190000, CategoryId = 2 }
     };
-
-    context.Categories.AddRange(categories);
-    //context.Items.AddRange(items);
+    
+    categoryRepository!.AddRange(categories);
+    itemRepository!.AddRange(items);
     context.SaveChanges();
 }

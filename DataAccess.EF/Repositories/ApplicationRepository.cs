@@ -22,9 +22,9 @@ public class ApplicationRepository<TEntityType> : IApplicationRepository<TEntity
         if (entity != null) await Context.AddAsync(entity);
     }
 
-    public async Task AddRangeAsync(IEnumerable<TEntityType> entities)
+    public void AddRange(IEnumerable<TEntityType> entities)
     {
-        await Context.AddRangeAsync(entities);
+        Context.AddRange(entities);
     }
 
     public void Remove(TEntityType? entity)

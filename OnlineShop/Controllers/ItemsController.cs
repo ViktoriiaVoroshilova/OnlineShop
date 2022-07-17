@@ -9,24 +9,30 @@ namespace OnlineShop.Controllers
     [ApiController]
     public class ItemsController : ControllerBase
     {
-        public ItemsController(IApplicationRepository<Category> categoryRepository, IApplicationRepository<Item> itemRepository)
+        public ItemsController(IApplicationRepository<Item> itemRepository)
         {
             _itemRepository = itemRepository;
         }
 
-        [HttpGet("items")]
-        public async Task<ActionResult<IEnumerable<Item>>> GetItems([FromQuery] int categoryId)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Item>>> GetItems([FromQuery] int categoryId, [FromQuery] int page, [FromQuery] int limit)
         {
-            return await _itemRepository.Context.Items.Where(i => i.CategoryId.Equals(categoryId)).ToListAsync();
+            return await _itemRepository
+                .Context
+                .Items
+                .Where(i => i.CategoryId.Equals(categoryId))
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .ToListAsync();
         }
 
-        [HttpGet("items/{id:int}")]
-        public async Task<ActionResult<Item>> GetItem(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Item?>> GetItem(int id)
         {
-            return await _itemRepository.Context.Items.SingleAsync(i => i.Id.Equals(id));
+            return await _itemRepository.Context.Items.SingleOrDefaultAsync(i => i.Id.Equals(id));
         }
 
-        [HttpPut("items/{id:int}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> PutItem(int id, Item item)
         {
             if (id != item.Id)
@@ -53,7 +59,7 @@ namespace OnlineShop.Controllers
             return NoContent();
         }
 
-        [HttpPost("items")]
+        [HttpPost]
         public async Task<ActionResult<Item>> PostItem(Item item)
         {
             await _itemRepository.AddAsync(item);
@@ -62,7 +68,7 @@ namespace OnlineShop.Controllers
             return CreatedAtAction("GetItem", new { id = item.Id }, item);
         }
 
-        [HttpDelete("items/{id:int}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteItem(int id)
         {
             var item = await _itemRepository.FindAsync(id);

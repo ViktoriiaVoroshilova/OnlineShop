@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.EF.Models;
-using DataAccess.EF.DataAccess;
 using DataAccess.EF.Repositories;
 
 namespace OnlineShop.Controllers
@@ -83,7 +82,7 @@ namespace OnlineShop.Controllers
                 return NotFound();
             }
 
-            var items = (await _itemRepository.Context.Items.ToListAsync()).Where(i => i.CategoryId.Equals(category.Id));
+            var items = _itemRepository.Context.Items.Where(i => i.CategoryId.Equals(category.Id));
             _itemRepository.RemoveRange(items);
             _categoryRepository.Remove(category);
             await _categoryRepository.SaveChangesAsync();

@@ -10,7 +10,7 @@ public interface IApplicationRepository<TEntityType>
 
     public Task AddAsync(TEntityType? entity);
 
-    public Task AddRangeAsync(IEnumerable<TEntityType> entities);
+    public void AddRange(IEnumerable<TEntityType> entities);
 
     public void Remove(TEntityType? entity);
 
